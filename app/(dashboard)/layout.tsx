@@ -1,13 +1,18 @@
-export default function DashboardLayout({
+import { redirect } from 'next/navigation';
+import { getSession } from '@/src/lib/auth';
+import { AdminLayout } from '@/components/layout/AdminLayout';
+
+export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <div>
-      {/* Dashboard sidebar and header will be implemented here */}
-      {children}
-    </div>
-  );
+  const session = await getSession();
+
+  if (!session) {
+    redirect('/login');
+  }
+
+  return <AdminLayout>{children}</AdminLayout>;
 }
 
