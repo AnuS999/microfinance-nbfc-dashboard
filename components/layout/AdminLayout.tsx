@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { signOut, useSession } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 import {
   LayoutDashboard,
   FileText,
@@ -15,7 +15,6 @@ import {
   X,
   ChevronLeft,
   ChevronRight,
-  LogOut,
   User,
   Bell,
   Search,
@@ -276,14 +275,6 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                     <div className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center text-white font-semibold text-xs sm:text-sm">
                       {session.user.name?.charAt(0).toUpperCase() || 'U'}
                     </div>
-                    <button
-                      onClick={() => signOut({ callbackUrl: '/login' })}
-                      className="p-1.5 sm:p-2 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors"
-                      aria-label="Sign out"
-                      title="Sign out"
-                    >
-                      <LogOut className="w-4 h-4 sm:w-5 sm:h-5" />
-                    </button>
                   </div>
                 )}
               </div>
