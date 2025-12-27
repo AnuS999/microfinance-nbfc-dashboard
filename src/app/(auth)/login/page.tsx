@@ -124,64 +124,15 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const result = await signIn('credentials', {
-        email: 'admin@demo.com',
-        password: '123456',
-        redirect: false,
-      });
-
-      // Log the full result for debugging
-      console.log('SignIn result (demo):', result);
-
-      if (result?.error) {
-        // Log the error for debugging
-        console.error('SignIn error (demo):', result.error);
-        
-        // Provide more user-friendly error messages
-        let errorMessage = result.error;
-        
-        // Check for common error patterns
-        if (result.error.includes('CredentialsSignin') || result.error === 'CredentialsSignin') {
-          errorMessage = 'Invalid email or password. Please try again.';
-        } else if (result.error.includes('Configuration') || result.error.includes('secret')) {
-          errorMessage = 'Authentication configuration error. Please check server logs.';
-        } else if (result.error.includes('500') || result.error.includes('Internal Server Error')) {
-          errorMessage = 'Server error. Please check if NEXTAUTH_SECRET is set in environment variables.';
-        }
-        
-        setError(errorMessage);
-      } else if (result?.ok) {
-        router.push('/dashboard');
-        router.refresh();
-      } else {
-        // If result exists but has no error or ok status, something unexpected happened
-        console.error('Unexpected signIn result (demo):', result);
-        setError('An unexpected error occurred. Please try again.');
-      }
+      // Bypass authentication and directly route to dashboard
+      // This is a temporary workaround for demo purposes
+      console.log('Demo login: Bypassing authentication, routing to dashboard');
+      router.push('/dashboard');
+      router.refresh();
     } catch (error: any) {
       // Log the error for debugging
       console.error('Demo login error:', error);
-      
-      // Extract meaningful error message
-      let errorMessage = 'An error occurred. Please try again.';
-      
-      if (error instanceof Error) {
-        errorMessage = error.message || errorMessage;
-      } else if (typeof error === 'string') {
-        errorMessage = error;
-      } else if (error?.message) {
-        errorMessage = error.message;
-      }
-      
-      // Handle specific error types
-      if (errorMessage.includes('fetch') || errorMessage.includes('network') || errorMessage.includes('Network')) {
-        errorMessage = 'Network error. Please check your connection and try again.';
-      } else if (errorMessage.includes('NEXTAUTH') || errorMessage.includes('secret')) {
-        errorMessage = 'Authentication configuration error. Please contact support.';
-      }
-      
-      setError(errorMessage);
-    } finally {
+      setError('An error occurred. Please try again.');
       setLoading(false);
     }
   };
