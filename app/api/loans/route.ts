@@ -1,10 +1,28 @@
 import { NextResponse } from 'next/server';
-import { connectDB } from '@/src/lib/db';
+
+// Force dynamic rendering to prevent build-time execution
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
+// Dynamic import to prevent build-time evaluation
+async function getDBConnection() {
+  try {
+    const { connectDB } = await import('@/src/lib/db');
+    return await connectDB();
+  } catch (error) {
+    // During build, if MONGODB_URI is not set, return null
+    if (process.env.NEXT_PHASE === 'phase-production-build' || 
+        process.env.NEXT_PHASE === 'phase-production-compile') {
+      return null;
+    }
+    throw error;
+  }
+}
 
 export async function GET() {
   try {
     // Connect to MongoDB (connection is cached, so this is fast on subsequent calls)
-    await connectDB();
+    await getDBConnection();
     
     // Fetch loans logic will be implemented here
     // Example: const loans = await Loan.find();
@@ -22,7 +40,7 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     // Connect to MongoDB
-    await connectDB();
+    await getDBConnection();
     
     const body = await request.json();
     // Create loan logic will be implemented here
