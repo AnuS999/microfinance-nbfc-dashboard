@@ -66,22 +66,43 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-indigo-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full">
         {/* Logo and Header */}
-        <div className="text-center mb-8">
-          <div className="flex justify-center mb-4">
-            <div className="bg-gradient-to-br from-blue-600 to-indigo-600 p-4 rounded-2xl shadow-lg">
-              <Building2 className="w-10 h-10 text-white" />
+        <div className="text-center mb-6 sm:mb-8">
+          <div className="flex flex-col items-center mb-4 sm:mb-6">
+            <div className="mb-3 sm:mb-4 w-full max-w-xs sm:max-w-sm md:max-w-md mx-auto">
+              <img
+                src="/samarpan-logo-full.svg"
+                alt="Samarpan Logo"
+                className="w-full h-auto"
+                style={{ 
+                  width: '100%', 
+                  height: 'auto',
+                  maxHeight: '150px',
+                  objectFit: 'contain',
+                  display: 'block'
+                }}
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  const formats = ['/samarpan-logo.png', '/samarpan-logo.jpg', '/samarpan-logo.jpeg', '/samarpan-logo.webp', '/samarpan-logo.svg'];
+                  for (const format of formats) {
+                    if (!target.src.includes(format)) {
+                      target.src = format;
+                      break;
+                    }
+                  }
+                }}
+              />
             </div>
           </div>
-          <h2 className="text-3xl font-bold text-gray-900">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900">
             Welcome Back
           </h2>
-          <p className="mt-2 text-sm text-gray-600">
-            Sign in to your Microfinance Dashboard
+          <p className="mt-2 text-xs sm:text-sm text-gray-600 px-4">
+            Sign in to your Samarpan Micro Finance Dashboard
           </p>
         </div>
 
         {/* Login Card */}
-        <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+        <div className="bg-white rounded-2xl shadow-xl p-4 sm:p-6 md:p-8 border border-gray-100">
           {error && (
             <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-center gap-2">
               <svg

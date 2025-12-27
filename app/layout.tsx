@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Microfinance NBFC Dashboard",
-  description: "Admin dashboard for Microfinance/NBFC management",
+  title: "Samarpan Micro Finance Dashboard",
+  description: "Admin dashboard for Samarpan Micro Finance",
 };
 
 export default function RootLayout({

@@ -1,9 +1,47 @@
 'use client';
 
 import { signIn } from 'next-auth/react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { Eye, EyeOff, Mail, Lock, Building2 } from 'lucide-react';
+
+// Logo component - shows full logo with multiple format support
+function Logo({ className = '' }: { className?: string }) {
+  const [imgSrc, setImgSrc] = useState('/samarpan-logo-full.svg');
+  
+  // Try different image formats
+  const formats = ['/samarpan-logo.png', '/samarpan-logo.jpg', '/samarpan-logo.jpeg', '/samarpan-logo.webp', '/samarpan-logo-full.svg', '/samarpan-logo.svg'];
+  
+  return (
+    <div className={`relative flex items-center justify-center ${className}`} style={{ width: '200px', height: '150px', maxWidth: '100%' }}>
+      <img
+        src={imgSrc}
+        alt="Samarpan Logo"
+        className="w-full h-full"
+        style={{ 
+          width: '100%', 
+          height: '100%', 
+          objectFit: 'contain',
+          display: 'block'
+        }}
+        onError={(e) => {
+          const target = e.target as HTMLImageElement;
+          const currentIndex = formats.indexOf(imgSrc);
+          if (currentIndex < formats.length - 1) {
+            const nextSrc = formats[currentIndex + 1];
+            setImgSrc(nextSrc);
+            target.src = nextSrc;
+          } else {
+            // Final fallback to SVG
+            target.src = '/samarpan-logo-full.svg';
+            setImgSrc('/samarpan-logo-full.svg');
+          }
+        }}
+      />
+    </div>
+  );
+}
 
 export default function LoginPage() {
   const router = useRouter();
@@ -67,16 +105,16 @@ export default function LoginPage() {
       <div className="max-w-md w-full">
         {/* Logo and Header */}
         <div className="text-center mb-8">
-          <div className="flex justify-center mb-4">
-            <div className="bg-gradient-to-br from-blue-600 to-indigo-600 p-4 rounded-2xl shadow-lg">
-              <Building2 className="w-10 h-10 text-white" />
+          <div className="flex flex-col items-center mb-4">
+            <div className="mb-4 flex justify-center">
+              <Logo />
             </div>
           </div>
           <h2 className="text-3xl font-bold text-gray-900">
             Welcome Back
           </h2>
           <p className="mt-2 text-sm text-gray-600">
-            Sign in to your Microfinance Dashboard
+            Sign in to your Samarpan Micro Finance Dashboard
           </p>
         </div>
 

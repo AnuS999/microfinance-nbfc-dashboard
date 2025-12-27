@@ -1,0 +1,28 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .logo-pink { fill: #FF1493; }
+    </style>
+  </defs>
+  
+  <!-- Outer rounded square/diamond shape (squircle) with interlocking design -->
+  <!-- Main frame with rounded corners -->
+  <path class="logo-pink" d="M 30 10 
+    C 15 10 5 20 5 35 L 5 165 
+    C 5 180 15 190 30 190 L 170 190 
+    C 185 190 195 180 195 165 L 195 35 
+    C 195 20 185 10 170 10 Z" 
+    fill-rule="evenodd"/>
+  
+  <!-- Inner cutout creating the interlocking effect -->
+  <path class="logo-pink" d="M 50 30 
+    C 40 30 30 40 30 50 L 30 150 
+    C 30 160 40 170 50 170 L 150 170 
+    C 160 170 170 160 170 150 L 170 50 
+    C 170 40 160 30 150 30 Z" 
+    fill-rule="evenodd"/>
+  
+  <!-- Dollar sign in center -->
+  <text x="100" y="130" font-family="Arial, sans-serif" font-size="70" font-weight="bold" text-anchor="middle" class="logo-pink">$</text>
+</svg>
+

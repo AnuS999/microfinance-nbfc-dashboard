@@ -96,48 +96,56 @@ export function AdminLayout({ children }: AdminLayoutProps) {
         `}
       >
         <div className="flex flex-col h-full">
-          {/* Logo Section */}
-          <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200">
-            {(!sidebarCollapsed || isMobile) && (
-              <div className="flex items-center gap-3">
-                <div className="bg-gradient-to-br from-blue-600 to-indigo-600 p-2 rounded-lg">
-                  <Building2 className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <h1 className="text-lg font-bold text-gray-900">Microfinance</h1>
-                  <p className="text-xs text-gray-500">NBFC Dashboard</p>
-                </div>
-              </div>
-            )}
-            {sidebarCollapsed && !isMobile && (
-              <div className="flex justify-center w-full">
-                <div className="bg-gradient-to-br from-blue-600 to-indigo-600 p-2 rounded-lg">
-                  <Building2 className="w-6 h-6 text-white" />
-                </div>
-              </div>
-            )}
-            {!isMobile && (
-              <button
-                onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-                className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-600 hover:text-gray-900 transition-colors"
-                aria-label="Toggle sidebar"
-              >
-                {sidebarCollapsed ? (
-                  <ChevronRight className="w-5 h-5" />
-                ) : (
-                  <ChevronLeft className="w-5 h-5" />
-                )}
-              </button>
-            )}
-            {isMobile && (
-              <button
-                onClick={() => setSidebarOpen(false)}
-                className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-600 hover:text-gray-900 transition-colors"
-                aria-label="Close sidebar"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            )}
+          {/* Logo Section - Header Image */}
+          <div className="px-2 sm:px-4 py-3 sm:py-4 border-b border-gray-200">
+            <div className="flex items-end justify-end mb-2">
+              {!isMobile && (
+                <button
+                  onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+                  className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-600 hover:text-gray-900 transition-colors"
+                  aria-label="Toggle sidebar"
+                >
+                  {sidebarCollapsed ? (
+                    <ChevronRight className="w-5 h-5" />
+                  ) : (
+                    <ChevronLeft className="w-5 h-5" />
+                  )}
+                </button>
+              )}
+              {isMobile && (
+                <button
+                  onClick={() => setSidebarOpen(false)}
+                  className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-600 hover:text-gray-900 transition-colors"
+                  aria-label="Close sidebar"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              )}
+            </div>
+            <div className="flex items-center justify-center w-full">
+              <img
+                src="/samarpan-logo-full.svg"
+                alt="Samarpan Logo"
+                className="w-full h-auto"
+                style={{ 
+                  width: '100%', 
+                  height: 'auto',
+                  maxHeight: '80px',
+                  objectFit: 'contain',
+                  display: 'block'
+                }}
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  const formats = ['/samarpan-logo.png', '/samarpan-logo.jpg', '/samarpan-logo.jpeg', '/samarpan-logo.webp', '/samarpan-logo.svg'];
+                  for (const format of formats) {
+                    if (!target.src.includes(format)) {
+                      target.src = format;
+                      break;
+                    }
+                  }
+                }}
+              />
+            </div>
           </div>
 
           {/* Navigation */}
@@ -204,65 +212,81 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           ml-0
         `}
       >
-        {/* Header */}
+        {/* Header - Image Only */}
         <header className="sticky top-0 z-30 bg-white border-b border-gray-200 shadow-sm">
-          <div className="flex items-center justify-between h-16 px-4 lg:px-6">
-            {/* Mobile Menu Button */}
-            <button
-              onClick={() => setSidebarOpen(true)}
-              className="lg:hidden p-2 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors"
-              aria-label="Open sidebar"
-            >
-              <Menu className="w-6 h-6" />
-            </button>
-
-            {/* Search Bar (Desktop) */}
-            <div className="hidden md:flex flex-1 max-w-md mx-4">
-              <div className="relative w-full">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Search..."
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+          <div className="px-2 sm:px-4 py-2 sm:py-3">
+            <div className="flex items-center justify-between gap-2">
+              {/* Mobile Menu Button */}
+              <button
+                onClick={() => setSidebarOpen(true)}
+                className="lg:hidden p-2 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors flex-shrink-0"
+                aria-label="Open sidebar"
+              >
+                <Menu className="w-5 h-5 sm:w-6 sm:h-6" />
+              </button>
+              
+              {/* Header Image */}
+              <div className="flex-1 flex justify-center min-w-0">
+                <img
+                  src="/samarpan-logo-full.svg"
+                  alt="Samarpan Logo"
+                  className="h-8 sm:h-10 md:h-12 w-auto max-w-full"
+                  style={{ 
+                    height: '32px',
+                    width: 'auto',
+                    maxWidth: '100%',
+                    objectFit: 'contain',
+                    display: 'block'
+                  }}
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    const formats = ['/samarpan-logo.png', '/samarpan-logo.jpg', '/samarpan-logo.jpeg', '/samarpan-logo.webp', '/samarpan-logo.svg'];
+                    for (const format of formats) {
+                      if (!target.src.includes(format)) {
+                        target.src = format;
+                        break;
+                      }
+                    }
+                  }}
                 />
               </div>
-            </div>
+              
+              {/* Right Side Actions */}
+              <div className="flex items-center gap-1 sm:gap-2 md:gap-3 flex-shrink-0">
+                {/* Notifications */}
+                <button
+                  className="relative p-1.5 sm:p-2 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors"
+                  aria-label="Notifications"
+                >
+                  <Bell className="w-4 h-4 sm:w-5 sm:h-5" />
+                  <span className="absolute top-0.5 right-0.5 sm:top-1 sm:right-1 w-1.5 h-1.5 sm:w-2 sm:h-2 bg-red-500 rounded-full"></span>
+                </button>
 
-            {/* Right Side Actions */}
-            <div className="flex items-center gap-3">
-              {/* Notifications */}
-              <button
-                className="relative p-2 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors"
-                aria-label="Notifications"
-              >
-                <Bell className="w-5 h-5" />
-                <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-              </button>
-
-              {/* User Menu */}
-              {session?.user && (
-                <div className="flex items-center gap-3">
-                  <div className="hidden md:flex flex-col items-end">
-                    <span className="text-sm font-medium text-gray-900">
-                      {session.user.name}
-                    </span>
-                    <span className="text-xs text-gray-500 capitalize">
-                      {session.user.role}
-                    </span>
+                {/* User Menu */}
+                {session?.user && (
+                  <div className="flex items-center gap-1 sm:gap-2 md:gap-3">
+                    <div className="hidden md:flex flex-col items-end">
+                      <span className="text-xs sm:text-sm font-medium text-gray-900">
+                        {session.user.name}
+                      </span>
+                      <span className="text-xs text-gray-500 capitalize">
+                        {session.user.role}
+                      </span>
+                    </div>
+                    <div className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center text-white font-semibold text-xs sm:text-sm">
+                      {session.user.name?.charAt(0).toUpperCase() || 'U'}
+                    </div>
+                    <button
+                      onClick={() => signOut({ callbackUrl: '/login' })}
+                      className="p-1.5 sm:p-2 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors"
+                      aria-label="Sign out"
+                      title="Sign out"
+                    >
+                      <LogOut className="w-4 h-4 sm:w-5 sm:h-5" />
+                    </button>
                   </div>
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center text-white font-semibold">
-                    {session.user.name?.charAt(0).toUpperCase() || 'U'}
-                  </div>
-                  <button
-                    onClick={() => signOut({ callbackUrl: '/login' })}
-                    className="p-2 rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors"
-                    aria-label="Sign out"
-                    title="Sign out"
-                  >
-                    <LogOut className="w-5 h-5" />
-                  </button>
-                </div>
-              )}
+                )}
+              </div>
             </div>
           </div>
         </header>

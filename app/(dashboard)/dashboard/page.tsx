@@ -171,7 +171,7 @@ export default function DashboardPage() {
       <div>
         <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
         <p className="mt-2 text-sm text-gray-600">
-          Welcome to your Microfinance Dashboard - Overview of your operations
+          Welcome to your Samarpan Micro Finance Dashboard - Overview of your operations
         </p>
       </div>
 
