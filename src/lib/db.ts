@@ -19,21 +19,22 @@ const globalForMongoose = global as unknown as {
 async function connectDB(): Promise<typeof mongoose> {
   const MONGODB_URI = process.env.MONGODB_URI;
 
-  // During build time, if MONGODB_URI is not available, return mongoose instance without connecting
-  // This allows the build to complete successfully
+  // During build time or if MONGODB_URI is not available, handle gracefully
   if (!MONGODB_URI) {
     // Check if we're in build phase (Next.js sets this during build)
-    const isBuildPhase = process.env.NEXT_PHASE === 'phase-production-build' || 
-                         process.env.NEXT_PHASE === 'phase-production-compile' ||
-                         !process.env.VERCEL_ENV && process.env.NODE_ENV === 'production';
+    const isBuildPhase = 
+      process.env.NEXT_PHASE === 'phase-production-build' || 
+      process.env.NEXT_PHASE === 'phase-production-compile';
     
-    if (isBuildPhase) {
-      // During build, return mongoose instance without connecting
-      // The actual connection will happen at runtime when the API is called
-      console.warn('⚠️ MONGODB_URI not set during build. Connection will be attempted at runtime.');
+    // In production without URI, log warning but don't throw to prevent app crashes
+    if (isBuildPhase || process.env.NODE_ENV === 'production') {
+      console.warn('⚠️ MONGODB_URI not set. Database features will be unavailable.');
+      // Return mongoose instance without connecting
+      // This allows the app to run, but database operations will fail gracefully
       return mongoose;
     }
     
+    // In development, throw error to alert developer
     throw new Error(
       'Please define the MONGODB_URI environment variable. For local development, add it to .env.local. For deployment, set it in your hosting platform\'s environment variables.'
     );

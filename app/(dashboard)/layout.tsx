@@ -7,12 +7,18 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await getSession();
+  try {
+    const session = await getSession();
 
-  if (!session) {
+    if (!session) {
+      redirect('/login');
+    }
+
+    return <AdminLayout>{children}</AdminLayout>;
+  } catch (error) {
+    console.error('Error in DashboardLayout:', error);
+    // Redirect to login on error
     redirect('/login');
   }
-
-  return <AdminLayout>{children}</AdminLayout>;
 }
 
