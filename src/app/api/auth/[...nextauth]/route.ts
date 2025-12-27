@@ -7,6 +7,11 @@ if (!requiredSecret && process.env.NODE_ENV === 'production') {
   console.error('❌ NEXTAUTH_SECRET or JWT_SECRET environment variable is missing. Authentication will fail.');
 }
 
+// Note: NEXTAUTH_URL should be set in production (NextAuth will use VERCEL_URL or default if not set)
+if (process.env.NODE_ENV === 'production' && !process.env.NEXTAUTH_URL) {
+  console.warn('⚠️ NEXTAUTH_URL is not set. NextAuth will try to infer it, but it\'s recommended to set it explicitly.');
+}
+
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
@@ -16,25 +21,32 @@ export const authOptions: NextAuthOptions = {
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
-          throw new Error('Please enter both email and password');
-        }
+        try {
+          if (!credentials?.email || !credentials?.password) {
+            console.error('Authorization failed: Missing email or password');
+            return null;
+          }
 
-        // Demo credentials - Replace with actual database lookup
-        if (
-          credentials.email === 'admin@demo.com' &&
-          credentials.password === '123456'
-        ) {
-          return {
-            id: '1',
-            email: 'admin@demo.com',
-            name: 'Admin User',
-            role: 'admin',
-          };
-        }
+          // Demo credentials - Replace with actual database lookup
+          if (
+            credentials.email === 'admin@demo.com' &&
+            credentials.password === '123456'
+          ) {
+            return {
+              id: '1',
+              email: 'admin@demo.com',
+              name: 'Admin User',
+              role: 'admin',
+            };
+          }
 
-        // Invalid credentials
-        throw new Error('Invalid email or password');
+          // Invalid credentials - return null instead of throwing
+          console.error('Authorization failed: Invalid credentials for', credentials.email);
+          return null;
+        } catch (error) {
+          console.error('Authorization error:', error);
+          return null;
+        }
       },
     }),
   ],
@@ -52,20 +64,30 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     async jwt({ token, user }) {
-      // Initial sign in
-      if (user) {
-        token.id = user.id;
-        token.role = (user as any).role;
+      try {
+        // Initial sign in
+        if (user) {
+          token.id = user.id;
+          token.role = (user as any).role;
+        }
+        return token;
+      } catch (error) {
+        console.error('JWT callback error:', error);
+        return token;
       }
-      return token;
     },
     async session({ session, token }) {
-      // Send properties to the client
-      if (session.user) {
-        (session.user as any).id = token.id;
-        (session.user as any).role = token.role;
+      try {
+        // Send properties to the client
+        if (session.user) {
+          (session.user as any).id = token.id;
+          (session.user as any).role = token.role;
+        }
+        return session;
+      } catch (error) {
+        console.error('Session callback error:', error);
+        return session;
       }
-      return session;
     },
   },
   secret: process.env.NEXTAUTH_SECRET || process.env.JWT_SECRET,
