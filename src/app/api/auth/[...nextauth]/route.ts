@@ -128,9 +128,6 @@ export const authOptions: NextAuthOptions = {
         console.log('Sign in successful:', user.email);
       }
     },
-    async signInError({ error }) {
-      console.error('Sign in error:', error);
-    },
   },
 };
 
