@@ -12,19 +12,19 @@ const globalForMongoose = global as unknown as {
   };
 };
 
-const MONGODB_URI = process.env.MONGODB_URI;
-
-if (!MONGODB_URI) {
-  throw new Error(
-    'Please define the MONGODB_URI environment variable inside .env.local'
-  );
-}
-
 /**
  * Creates a new MongoDB connection or returns the existing cached connection.
  * This prevents multiple connections in Next.js development environment.
  */
 async function connectDB(): Promise<typeof mongoose> {
+  const MONGODB_URI = process.env.MONGODB_URI;
+
+  if (!MONGODB_URI) {
+    throw new Error(
+      'Please define the MONGODB_URI environment variable. For local development, add it to .env.local. For deployment, set it in your hosting platform\'s environment variables.'
+    );
+  }
+
   // If we already have a cached connection, return it
   if (globalForMongoose.mongoose.conn) {
     return globalForMongoose.mongoose.conn;
@@ -37,7 +37,7 @@ async function connectDB(): Promise<typeof mongoose> {
     };
 
     globalForMongoose.mongoose.promise = mongoose
-      .connect(MONGODB_URI!, opts)
+      .connect(MONGODB_URI, opts)
       .then((mongoose) => {
         console.log('✅ MongoDB connected successfully');
         return mongoose;
