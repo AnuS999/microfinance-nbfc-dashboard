@@ -1,11 +1,28 @@
 import NextAuth, { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 
-// Validate required environment variables
-const requiredSecret = process.env.NEXTAUTH_SECRET || process.env.JWT_SECRET;
-if (!requiredSecret && process.env.NODE_ENV === 'production') {
-  console.error('❌ NEXTAUTH_SECRET or JWT_SECRET environment variable is missing. Authentication will fail.');
-}
+// Get and validate the secret - ensure it's a non-empty string
+const getSecret = (): string => {
+  const secret = process.env.NEXTAUTH_SECRET || process.env.JWT_SECRET;
+  
+  if (!secret || typeof secret !== 'string' || secret.trim().length === 0) {
+    const errorMsg = 'NEXTAUTH_SECRET or JWT_SECRET environment variable is missing or invalid. Please set it in your environment variables.';
+    console.error('❌', errorMsg);
+    
+    // In production, we need to throw an error to prevent runtime issues
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error(errorMsg);
+    }
+    
+    // In development, provide a warning and use a temporary secret (not recommended for production)
+    console.warn('⚠️ Using a temporary secret for development. Set NEXTAUTH_SECRET in .env.local for production.');
+    return 'temporary-dev-secret-change-in-production';
+  }
+  
+  return secret;
+};
+
+const authSecret = getSecret();
 
 // Note: NEXTAUTH_URL should be set in production (NextAuth will use VERCEL_URL or default if not set)
 if (process.env.NODE_ENV === 'production' && !process.env.NEXTAUTH_URL) {
@@ -55,7 +72,7 @@ export const authOptions: NextAuthOptions = {
     maxAge: 7 * 24 * 60 * 60, // 7 days
   },
   jwt: {
-    secret: process.env.JWT_SECRET || process.env.NEXTAUTH_SECRET,
+    secret: authSecret,
     maxAge: 7 * 24 * 60 * 60, // 7 days
   },
   pages: {
@@ -90,7 +107,7 @@ export const authOptions: NextAuthOptions = {
       }
     },
   },
-  secret: process.env.NEXTAUTH_SECRET || process.env.JWT_SECRET,
+  secret: authSecret,
   debug: process.env.NODE_ENV === 'development',
   events: {
     async signIn({ user, account, profile }) {
