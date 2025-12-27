@@ -5,24 +5,37 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 const getSecret = (): string => {
   const secret = process.env.NEXTAUTH_SECRET || process.env.JWT_SECRET;
   
-  if (!secret || typeof secret !== 'string' || secret.trim().length === 0) {
-    const errorMsg = 'NEXTAUTH_SECRET or JWT_SECRET environment variable is missing or invalid. Please set it in your environment variables.';
+  // Validate secret exists and is a valid non-empty string
+  if (!secret) {
+    const errorMsg = 'NEXTAUTH_SECRET or JWT_SECRET environment variable is missing. Please set it in your Vercel environment variables. Generate one using: openssl rand -base64 32';
     console.error('❌', errorMsg);
-    
-    // In production, we need to throw an error to prevent runtime issues
-    if (process.env.NODE_ENV === 'production') {
-      throw new Error(errorMsg);
-    }
-    
-    // In development, provide a warning and use a temporary secret (not recommended for production)
-    console.warn('⚠️ Using a temporary secret for development. Set NEXTAUTH_SECRET in .env.local for production.');
-    return 'temporary-dev-secret-change-in-production';
+    throw new Error(errorMsg);
   }
   
-  return secret;
+  if (typeof secret !== 'string') {
+    const errorMsg = 'NEXTAUTH_SECRET or JWT_SECRET must be a string. Please check your environment variables.';
+    console.error('❌', errorMsg);
+    throw new Error(errorMsg);
+  }
+  
+  const trimmedSecret = secret.trim();
+  if (trimmedSecret.length === 0) {
+    const errorMsg = 'NEXTAUTH_SECRET or JWT_SECRET is set but is empty. Please set a valid secret in your Vercel environment variables.';
+    console.error('❌', errorMsg);
+    throw new Error(errorMsg);
+  }
+  
+  return trimmedSecret;
 };
 
-const authSecret = getSecret();
+let authSecret: string;
+try {
+  authSecret = getSecret();
+} catch (error) {
+  // Log the error but still throw to prevent the app from running with invalid config
+  console.error('❌ Fatal error: Cannot initialize NextAuth without a valid secret:', error);
+  throw error;
+}
 
 // Note: NEXTAUTH_URL should be set in production (NextAuth will use VERCEL_URL or default if not set)
 if (process.env.NODE_ENV === 'production' && !process.env.NEXTAUTH_URL) {
