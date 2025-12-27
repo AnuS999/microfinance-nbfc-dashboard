@@ -1,6 +1,12 @@
 import NextAuth, { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 
+// Validate required environment variables
+const requiredSecret = process.env.NEXTAUTH_SECRET || process.env.JWT_SECRET;
+if (!requiredSecret && process.env.NODE_ENV === 'production') {
+  console.error('❌ NEXTAUTH_SECRET or JWT_SECRET environment variable is missing. Authentication will fail.');
+}
+
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
@@ -62,8 +68,18 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
   },
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: process.env.NEXTAUTH_SECRET || process.env.JWT_SECRET,
   debug: process.env.NODE_ENV === 'development',
+  events: {
+    async signIn({ user, account, profile }) {
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Sign in successful:', user.email);
+      }
+    },
+    async signInError({ error }) {
+      console.error('Sign in error:', error);
+    },
+  },
 };
 
 const handler = NextAuth(authOptions);

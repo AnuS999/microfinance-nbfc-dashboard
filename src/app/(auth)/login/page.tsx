@@ -65,12 +65,35 @@ export default function LoginPage() {
 
       if (result?.error) {
         setError(result.error);
-      } else {
+      } else if (result?.ok) {
         router.push('/dashboard');
         router.refresh();
+      } else {
+        setError('An error occurred. Please try again.');
       }
-    } catch (error) {
-      setError('An error occurred. Please try again.');
+    } catch (error: any) {
+      // Log the error for debugging
+      console.error('Login error:', error);
+      
+      // Extract meaningful error message
+      let errorMessage = 'An error occurred. Please try again.';
+      
+      if (error instanceof Error) {
+        errorMessage = error.message || errorMessage;
+      } else if (typeof error === 'string') {
+        errorMessage = error;
+      } else if (error?.message) {
+        errorMessage = error.message;
+      }
+      
+      // Handle specific error types
+      if (errorMessage.includes('fetch') || errorMessage.includes('network') || errorMessage.includes('Network')) {
+        errorMessage = 'Network error. Please check your connection and try again.';
+      } else if (errorMessage.includes('NEXTAUTH') || errorMessage.includes('secret')) {
+        errorMessage = 'Authentication configuration error. Please contact support.';
+      }
+      
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -89,12 +112,35 @@ export default function LoginPage() {
 
       if (result?.error) {
         setError(result.error);
-      } else {
+      } else if (result?.ok) {
         router.push('/dashboard');
         router.refresh();
+      } else {
+        setError('An error occurred. Please try again.');
       }
-    } catch (error) {
-      setError('An error occurred. Please try again.');
+    } catch (error: any) {
+      // Log the error for debugging
+      console.error('Demo login error:', error);
+      
+      // Extract meaningful error message
+      let errorMessage = 'An error occurred. Please try again.';
+      
+      if (error instanceof Error) {
+        errorMessage = error.message || errorMessage;
+      } else if (typeof error === 'string') {
+        errorMessage = error;
+      } else if (error?.message) {
+        errorMessage = error.message;
+      }
+      
+      // Handle specific error types
+      if (errorMessage.includes('fetch') || errorMessage.includes('network') || errorMessage.includes('Network')) {
+        errorMessage = 'Network error. Please check your connection and try again.';
+      } else if (errorMessage.includes('NEXTAUTH') || errorMessage.includes('secret')) {
+        errorMessage = 'Authentication configuration error. Please contact support.';
+      }
+      
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
