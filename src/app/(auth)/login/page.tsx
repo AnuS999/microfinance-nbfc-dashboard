@@ -63,13 +63,33 @@ export default function LoginPage() {
         redirect: false,
       });
 
+      // Log the full result for debugging
+      console.log('SignIn result:', result);
+
       if (result?.error) {
-        setError(result.error);
+        // Log the error for debugging
+        console.error('SignIn error:', result.error);
+        
+        // Provide more user-friendly error messages
+        let errorMessage = result.error;
+        
+        // Check for common error patterns
+        if (result.error.includes('CredentialsSignin') || result.error === 'CredentialsSignin') {
+          errorMessage = 'Invalid email or password. Please try again.';
+        } else if (result.error.includes('Configuration') || result.error.includes('secret')) {
+          errorMessage = 'Authentication configuration error. Please check server logs.';
+        } else if (result.error.includes('500') || result.error.includes('Internal Server Error')) {
+          errorMessage = 'Server error. Please check if NEXTAUTH_SECRET is set in environment variables.';
+        }
+        
+        setError(errorMessage);
       } else if (result?.ok) {
         router.push('/dashboard');
         router.refresh();
       } else {
-        setError('An error occurred. Please try again.');
+        // If result exists but has no error or ok status, something unexpected happened
+        console.error('Unexpected signIn result:', result);
+        setError('An unexpected error occurred. Please try again.');
       }
     } catch (error: any) {
       // Log the error for debugging
@@ -110,13 +130,33 @@ export default function LoginPage() {
         redirect: false,
       });
 
+      // Log the full result for debugging
+      console.log('SignIn result (demo):', result);
+
       if (result?.error) {
-        setError(result.error);
+        // Log the error for debugging
+        console.error('SignIn error (demo):', result.error);
+        
+        // Provide more user-friendly error messages
+        let errorMessage = result.error;
+        
+        // Check for common error patterns
+        if (result.error.includes('CredentialsSignin') || result.error === 'CredentialsSignin') {
+          errorMessage = 'Invalid email or password. Please try again.';
+        } else if (result.error.includes('Configuration') || result.error.includes('secret')) {
+          errorMessage = 'Authentication configuration error. Please check server logs.';
+        } else if (result.error.includes('500') || result.error.includes('Internal Server Error')) {
+          errorMessage = 'Server error. Please check if NEXTAUTH_SECRET is set in environment variables.';
+        }
+        
+        setError(errorMessage);
       } else if (result?.ok) {
         router.push('/dashboard');
         router.refresh();
       } else {
-        setError('An error occurred. Please try again.');
+        // If result exists but has no error or ok status, something unexpected happened
+        console.error('Unexpected signIn result (demo):', result);
+        setError('An unexpected error occurred. Please try again.');
       }
     } catch (error: any) {
       // Log the error for debugging
