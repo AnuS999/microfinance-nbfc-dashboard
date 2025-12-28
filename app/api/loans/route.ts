@@ -1,37 +1,28 @@
 import { NextResponse } from 'next/server';
+import connectDB from '@/src/lib/db';
+import { Loan, Customer } from '@/src/models';
 
 // Force dynamic rendering to prevent build-time execution
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
-// Dynamic import to prevent build-time evaluation
-async function getDBConnection() {
-  try {
-    const { connectDB } = await import('@/src/lib/db');
-    return await connectDB();
-  } catch (error) {
-    // During build, if MONGODB_URI is not set, return null
-    if (process.env.NEXT_PHASE === 'phase-production-build' || 
-        process.env.NEXT_PHASE === 'phase-production-compile') {
-      return null;
-    }
-    throw error;
-  }
-}
-
 export async function GET() {
   try {
-    // Connect to MongoDB (connection is cached, so this is fast on subsequent calls)
-    await getDBConnection();
+    await connectDB();
     
-    // Fetch loans logic will be implemented here
-    // Example: const loans = await Loan.find();
+    const loans = await Loan.find({})
+      .populate('customerId', 'firstName lastName email phone')
+      .sort({ createdAt: -1 })
+      .lean();
     
-    return NextResponse.json({ message: 'Get loans endpoint' });
-  } catch (error) {
+    return NextResponse.json({ 
+      data: loans,
+      message: 'Loans fetched successfully' 
+    });
+  } catch (error: any) {
     console.error('Error fetching loans:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch loans' },
+      { error: error.message || 'Failed to fetch loans' },
       { status: 500 }
     );
   }
@@ -39,20 +30,68 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    // Connect to MongoDB
-    await getDBConnection();
+    await connectDB();
     
     const body = await request.json();
-    // Create loan logic will be implemented here
-    // Example: const loan = await Loan.create(body);
-    
-    return NextResponse.json({ message: 'Create loan endpoint' });
-  } catch (error) {
-    console.error('Error creating loan:', error);
+    const { customerId, amount, interestRate, term, purpose, status } = body;
+
+    // Validate required fields
+    if (!customerId || !amount || !interestRate || !term) {
+      return NextResponse.json(
+        { error: 'Customer ID, amount, interest rate, and term are required' },
+        { status: 400 }
+      );
+    }
+
+    // Verify customer exists
+    const customer = await Customer.findById(customerId);
+    if (!customer) {
+      return NextResponse.json(
+        { error: 'Customer not found' },
+        { status: 404 }
+      );
+    }
+
+    // Calculate maturity date if disbursement date is provided or status is active
+    let maturityDate;
+    if (status === 'active' || status === 'approved') {
+      const disbursementDate = new Date();
+      maturityDate = new Date(disbursementDate);
+      maturityDate.setMonth(maturityDate.getMonth() + term);
+    }
+
+    // Create new loan
+    const loan = new Loan({
+      customerId,
+      amount,
+      interestRate,
+      term,
+      purpose,
+      status: status || 'pending',
+      disbursementDate: (status === 'active' || status === 'approved') ? new Date() : undefined,
+      maturityDate,
+    });
+
+    const savedLoan = await loan.save();
+
+    // Populate customer data in response
+    const populatedLoan = await Loan.findById(savedLoan._id)
+      .populate('customerId', 'firstName lastName email phone')
+      .lean();
+
     return NextResponse.json(
-      { error: 'Invalid request' },
-      { status: 400 }
+      { 
+        data: populatedLoan,
+        message: 'Loan created successfully' 
+      },
+      { status: 201 }
+    );
+  } catch (error: any) {
+    console.error('Error creating loan:', error);
+    
+    return NextResponse.json(
+      { error: error.message || 'Failed to create loan' },
+      { status: 500 }
     );
   }
 }
-
